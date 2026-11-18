@@ -1,0 +1,63 @@
+# 전시장 도면 (시연용 설정)
+#
+# 이 도면은 실제 건물의 도면이 아니다. 팀이 시연을 위해 정한 가상의 전시장이다 (D-27, D-38, D-42).
+# 큰 네모 하나(전시장) 안에 네모 구역 A, B, C가 있고, 구역마다 CCTV가 한 대 있다 (D-39, D-42).
+#
+# 실제 영상과 보정 자료에서 나오는 것: 각 구역 네모의 가로·세로(미터), 사람 점의 위치와 수.
+# 팀이 정한 것: 세 네모를 큰 네모 안에 놓는 자리(왼쪽부터 A, B, C), 구역 이름, 네모 사이와 둘레의 간격.
+# 화면과 보고서에 "가상 전시장 도면에 공개 영상(SAIVT-QUT)을 CCTV로 가정해 놓았다"고 밝힌다 (규칙 5, E-06).
+#
+# 도면 좌표: 왼쪽 위가 (0, 0). 가로 u는 오른쪽으로, 세로 v는 아래쪽으로. 단위는 미터.
+name: 가상 전시장
+size_m: [18.6, 4.2]          # 큰 네모. 세 구역 네모와 간격(0.6m)을 더한 크기
+
+# 구역마다:
+#   plan_origin_m — 구역 네모의 왼쪽 위가 도면에서 놓이는 자리 (시연용 설정)
+#   cctv.count_rect — 사람을 세는 네모. 그 CCTV가 보는 바닥(visible_floor_m) 안에 들어가는 가장 큰 네모를
+#     0.05m 눈금으로 찾은 것이다 (E-30). 좌표는 그 카메라 보정 자료의 땅 좌표(미터)다.
+#     corner_m에서 angle_deg 방향으로 width_m, 그 오른쪽(시계 방향 90도)으로 height_m만큼이 네모다.
+#     네모의 긴 쪽이 도면의 가로가 된다. 위에서 본 모양 그대로이고 좌우가 뒤집히지 않는다.
+#     (카메라가 네모를 보는 방향은 구역마다 다르다. 도면의 위쪽이 화면의 위쪽이라는 뜻은 아니다.)
+#   구역의 넓이 = width_m × height_m. 붐빔은 이 네모 안의 사람 수 ÷ 이 넓이로 판단한다.
+#   네모 밖에서 찾은 사람은 세지 않고 도면에도 그리지 않는다.
+# 세 영상이 같은 시각에 찍혔다는 것은 확인하지 못했다 (E-42). 같은 프레임 번호를 같은 시각으로 가정한다 (D-39).
+zones:
+  A:
+    name: A구역
+    plan_origin_m: [0.6, 0.6]
+    cctv:
+      id: CCTV-A
+      source: SAIVT-QUT 카메라 A
+      frames: data/qut/SAIVT-QUTCrowdCountingDatabase/Datasets/QUT/A/img
+      calibration: data/qut/SAIVT-QUTCrowdCountingDatabase/Datasets/QUT/A/calibration.xml
+      detections: outputs/detections/qut_A_yolo26x_1280.npz
+      image_size: [704, 576]
+      count_rect: {corner_m: [0.30, 36.19], angle_deg: 94.0, width_m: 5.75, height_m: 3.0}
+      visible_floor_m: [[0.05, 36.2], [0.0, 38.45], [-0.05, 40.6], [-0.25, 41.95], [2.35, 42.1], [3.1, 42.2],
+                        [3.7, 41.6], [3.15, 40.5], [3.1, 39.8], [3.85, 39.25], [5.45, 39.2], [2.9, 35.3]]
+  B:
+    name: B구역 (메인 전시장)     # D-42: 사람이 가장 많은 구역을 메인 전시장으로 가정
+    plan_origin_m: [6.95, 0.6]
+    cctv:
+      id: CCTV-B
+      source: SAIVT-QUT 카메라 B
+      frames: data/qut/SAIVT-QUTCrowdCountingDatabase/Datasets/QUT/B/img
+      calibration: data/qut/SAIVT-QUTCrowdCountingDatabase/Datasets/QUT/B/calibration.xml
+      detections: outputs/detections/qut_B_yolo26x_1280.npz
+      image_size: [704, 576]
+      count_rect: {corner_m: [-1.10, 21.14], angle_deg: 38.0, width_m: 4.65, height_m: 3.0}
+      visible_floor_m: [[0.0, 17.05], [-1.0, 17.6], [-0.65, 18.75], [-0.5, 19.85], [-1.15, 20.05], [-1.1, 21.85],
+                        [-1.1, 22.35], [2.6, 24.05], [4.8, 21.4], [3.8, 20.55], [3.1, 20.55], [2.9, 19.85], [2.9, 19.7]]
+  C:
+    name: C구역
+    plan_origin_m: [12.2, 1.225]
+    cctv:
+      id: CCTV-C
+      source: SAIVT-QUT 카메라 C
+      frames: data/qut/SAIVT-QUTCrowdCountingDatabase/Datasets/QUT/C/img
+      calibration: data/qut/SAIVT-QUTCrowdCountingDatabase/Datasets/QUT/C/calibration.xml
+      detections: outputs/detections/qut_C_yolo26x_1280.npz
+      image_size: [704, 576]
+      count_rect: {corner_m: [3.42, 20.2], angle_deg: 120.0, width_m: 5.8, height_m: 1.75}
+      visible_floor_m: [[5.45, 19.8], [4.0, 19.9], [3.45, 20.05], [2.9, 20.85], [1.7, 23.1], [0.55, 24.05],
+                        [-0.15, 24.5], [-0.65, 24.7], [-1.2, 25.35], [-0.55, 26.55], [3.65, 26.0]]

@@ -1,0 +1,27 @@
+[project]
+name = "crowdflow"
+version = "0.1.0"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+    "crewai[litellm]>=1.15.23",
+    "pytest>=9.1.1",
+    "streamlit>=1.65.0",
+    "supervision>=0.30.6",
+    "torch>=2.14.1",
+    "torchvision>=0.29.1",
+    "ultralytics>=8.4.171",
+]
+
+# PyTorch CUDA 빌드 (근거: uv 공식 문서 PyTorch 통합 안내)
+[tool.uv.sources]
+torch = [{ index = "pytorch-cu130", marker = "sys_platform == 'linux' or sys_platform == 'win32'" }]
+torchvision = [{ index = "pytorch-cu130", marker = "sys_platform == 'linux' or sys_platform == 'win32'" }]
+
+[[tool.uv.index]]
+name = "pytorch-cu130"
+url = "https://download.pytorch.org/whl/cu130"
+explicit = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]   # 시험은 tests 폴더만 돌린다 (outputs나 third_party의 파일이 함께 돌지 않게)
+pythonpath = ["src"]    # PYTHONPATH를 따로 주지 않아도 시험이 crowdflow를 찾게 한다 (pytest 공식 설정 항목)
